@@ -1,3 +1,4 @@
+from numpy import random
 import pandas as pd
 from pathlib import Path
 from minio import Minio
@@ -5,7 +6,7 @@ import json
 from io import BytesIO
 from config import env 
 import pika
- 
+import random 
 def fetch_minio_data( object_name):
     client = Minio(
         endpoint=env.minio_endpoint,
@@ -61,7 +62,7 @@ def send_to_rabbitmq(json_list: list[str],withdraw:bool):
           amount=-amount
         account={
             "txid":acc_info["TransactionID"],
-            "taxid":acc_info["PSPTransactionID"],
+            "taxid":random.randint(0, 1_000_000),
             "timestamp":acc_info["TransactionDate"],
             "amount":amount,
             "operator":"interomegaltd",

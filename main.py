@@ -35,7 +35,6 @@ async def execute_route(
     if authorization is None or authorization != env.auth_token:
         print(authorization)
         print(env.auth_token)
-
         raise HTTPException(status_code=401, detail="Unauthorized: Missing or invalid Authorization header")
     if not body.EventName in s3_put_event:
         raise HTTPException(status_code=422,detail="Invalid S3 Method")
