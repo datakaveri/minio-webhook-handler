@@ -1,5 +1,6 @@
 from numpy import random
 import pandas as pd
+import uuid
 from pathlib import Path
 from minio import Minio
 import json
@@ -43,12 +44,17 @@ def parse_data(file_content, file_type):
 
 def send_to_rabbitmq(json_list: list[str],withdraw:bool):
     # Establish connection to RabbitMQ
+    correlation_id = str(uuid.uuid4())
+
+    properties = pika.BasicProperties(
+            correlation_id=correlation_id
+    )
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(
             host=env.rabbitmq_host,
             port=env.rabbitmq_port,
             credentials=pika.PlainCredentials(env.rabbitmq_username, env.rabbitmq_password),
-            virtual_host=env.rabbitmq_vhost
+            virtual_host=env.rabbitmq_vhost,
         )
     )
     channel = connection.channel()
@@ -72,13 +78,17 @@ def send_to_rabbitmq(json_list: list[str],withdraw:bool):
             "game_acc_id":acc_info["AccountNumber"],
         }
         account_string=json.dumps(account)
+        correlation_id = str(uuid.uuid4())
+
+        properties = pika.BasicProperties(
+            content_type='application/json',
+            correlation_id=correlation_id
+        )
         channel.basic_publish(
             exchange=env.rabbitmq_exchange,
             routing_key=env.rabbitmq_routing_key,
             body=account_string,
-            properties=pika.BasicProperties(
-                content_type='application/json'
-            )
+            properties=properties
         )
     print(f"Sent {len(json_list)} messages to RabbitMQ")
     connection.close()
