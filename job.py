@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 from minio import Minio
 import json
+import datetime
 from io import BytesIO
 from config import env 
 import pika
@@ -60,10 +61,12 @@ def send_to_rabbitmq(json_list: list[str],withdraw:bool):
         amount=int(acc_info["Amount"].replace(",",""),10)
         if withdraw:
           amount=-amount
+        date_obj= datetime.datetime.strptime(acc_info["TransactionDate"], "%Y-%m-%d %H:%M:%S")
+        date = date_obj.strftime("%Y-%m-%d %H:%M:%S.%f")
         account={
             "txid":acc_info["TransactionID"],
             "taxid":random.randint(0, 1_000_000),
-            "timestamp":acc_info["TransactionDate"],
+            "timestamp":date,
             "amount":amount,
             "operator":"interomegaltd",
             "game_acc_id":acc_info["AccountNumber"],
