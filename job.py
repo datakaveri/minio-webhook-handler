@@ -69,8 +69,8 @@ def send_to_rabbitmq(json_list: list[str],withdraw:bool):
         }
         account_string=json.dumps(account)
         channel.basic_publish(
-            exchange='gmas_accounts_exchange',
-            routing_key='gmas_demo_accounts_key',
+            exchange=env.rabbitmq_exchange,
+            routing_key=env.rabbitmq_routing_key,
             body=account_string,
             properties=pika.BasicProperties(
                 content_type='application/json'

@@ -16,7 +16,8 @@ class Env(BaseSettings):
     rabbitmq_username: str = Field(..., description="RabbitMQ username")
     rabbitmq_password: str = Field(..., description="RabbitMQ password")
     rabbitmq_vhost: str = Field(..., description="RabbitMQ virtual host")
-
+    rabbitmq_routing_key: str = Field(..., description="Rebbitmq routing key")
+    rabbitmq_exchange: str = Field(..., description="Rebbitmq exchange")
     auth_token:str=Field(..., description="auth token for minio")
 
     class Config:
